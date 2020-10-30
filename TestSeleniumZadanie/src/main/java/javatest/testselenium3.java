@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -18,6 +19,7 @@ import org.openqa.selenium.interactions.Actions;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(Parameterized.class)
 public class testselenium3 {
@@ -29,7 +31,7 @@ public class testselenium3 {
 
     @Parameterized.Parameters
     public static Collection getBrowser() {
-        return Arrays.asList(new Object[][]{{"FF"}, {"Chrome"}});//ustawiam z jakich przeglądarek korzystam
+        return Arrays.asList(new Object[][]{{"FF"},{"Chrome"} });//ustawiam z jakich przeglądarek korzystam
     }
 
     public testselenium3(String browser) {
@@ -56,41 +58,44 @@ public class testselenium3 {
             System.setProperty("webdriver.chrome.driver", dostepDoChrom);
             driver = new ChromeDriver();
         }
-        if (dirContents[dirContents.length - 1].getName().equalsIgnoreCase("logotypy.zip"))//usuwam zbędny nadmiarowy pobrany plik logotypy.zip z poprzedniej próby żeby nie robiły mi się pliki logotypy.zip(2)
-        {
-            dirContents[dirContents.length - 1].delete();
+
+        for (int i = 1; i < dirContents.length; i++) {
+            if (dirContents[dirContents.length - i].getName().equalsIgnoreCase("logotypy.zip"))//usuwam zbędny nadmiarowy pobrany plik logotypy.zip z poprzedniej próby żeby nie robiły mi się pliki logotypy.zip(2)
+            {
+                dirContents[dirContents.length - i].delete();
+            }
         }
-        driver.manage().window().maximize();
-        driver.get("https://www.medicalgorithmics.pl/");
-        Thread.sleep(2000);
+            driver.manage().window().maximize();
+            driver.get("https://www.medicalgorithmics.pl/");
     }
 
     @Test
     public void test1() throws InterruptedException {
 
-        WebElement newBtn = driver.findElement(By.xpath("/html/body/div[3]/div/header/div/div/div/nav[1]/div/ul/li[4]/a"));
-        String s1=newBtn.getCssValue("color");
+        WebElement newBtn =driver.findElement(By.id("mega-menu-item-29"));
+        WebElement newBtn2 =driver.findElement(By.xpath("/html/body/div[3]/div/header/div/div/div/nav[1]/div/ul/li[4]/a"));
+        String s1=newBtn2.getCssValue("color");
         Actions actions = new Actions(driver);
         actions.moveToElement(newBtn).perform();//przesuwam kursorem żeby zmienić kolor
-        Thread.sleep(7000);
-        String s2=newBtn.getCssValue("color");
+        TimeUnit.MILLISECONDS.sleep(1555);
+        String s2=newBtn2.getCssValue("color");
 
 
         String StrNew1 = s1.replace("a", "");
         String strNew2 = s2.replace("a", "");//fierfox ma rgb a chrome rgba kolor
         Assert.assertNotEquals(StrNew1,strNew2);// zweryfikuj, że Zakładka Kontakt zmienia kolor czcionki po najechaniu,
-
         newBtn.click();
-        Thread.sleep(4000);
-        driver.findElement(By.xpath("/html/body/div[3]/div/div/div/div[2]/div/div[7]/div/div/div/div/div/div[4]/div/div/div/div[1]/div/div/div[1]/div/a/div/img")).click();
-            Thread.sleep(2000);
+        TimeUnit.MILLISECONDS.sleep(3555);
+        JavascriptExecutor js = ((JavascriptExecutor) driver);
+        js.executeScript("window.scrollTo(0, document.body.scrollHeight)");
+        TimeUnit.MILLISECONDS.sleep(3555);
+    driver.findElement(By.cssSelector("div.spacer-mobile:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(1) > h3:nth-child(1) > a:nth-child(1)")).click();
+      TimeUnit.MILLISECONDS.sleep(3555);
         driver.findElement(By.className("vc_single_image-img")).click();
-        Thread.sleep(7000);
-
-        {
-            Assert.assertEquals(true, dirContents[dirContents.length - 1].getName().equalsIgnoreCase("logotypy.zip"));// zweryfikuj, że plik pobrał się poprawnie na lokalny komputer zakładając, że zawsze pobierany jest do folderu "Downloads".
-
-    }
+        TimeUnit.MILLISECONDS.sleep(3555);
+            {
+                Assert.assertEquals(true, dirContents[dirContents.length - 1].getName().equalsIgnoreCase("logotypy.zip"));// zweryfikuj, że plik pobrał się poprawnie na lokalny komputer zakładając, że zawsze pobierany jest do folderu "Downloads".
+            }
     }
 }
 
